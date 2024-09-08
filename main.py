@@ -32,6 +32,7 @@ class Game:
         self.exit_button_hover = import_image('exit_hover.png', (0, 0, 0))
         self.like = import_image('like.png', (0, 0, 0))
         self.like_button_hover = import_image('like_hover.png', (0, 0, 0))
+        self.button_bg = import_image('button_bg.png', (0, 0, 0), 20)
 
         self.buttons = {
             "start": [self.start_button, self.start_button_hover],
@@ -46,6 +47,7 @@ class Game:
         self.press_sound = pygame.mixer.Sound('data/sounds/pressed.mp3')
 
         self.text = font('small_font.png', (255, 255, 255), 3)
+        self.score_text = font('small_font.png', (255, 255, 255), 5)
         self.title_text = font('small_font.png', (255, 0, 0), 10)
 
         self.clock = pygame.time.Clock()
@@ -230,6 +232,7 @@ class Game:
                 button_rect = pygame.Rect(pos[0], pos[1] + offset, self.buttons[button][0].get_width(),
                                           self.buttons[button][0].get_height())
                 if button_rect.collidepoint(mouse_pos):
+                    self.screen.blit(self.button_bg, button_rect.topleft)
                     self.screen.blit(self.buttons[button][1], button_rect.topleft)
                     if pygame.mouse.get_pressed()[0]:
                         self.press_sound.play()
@@ -259,7 +262,8 @@ class Game:
             # Filling the surfaces---------------------------#
             self.screen.fill((0, 0, 0))
             self.title_text.display_fonts(self.screen, "Game Over!", [130, 250])
-            self.text.display_fonts(self.screen, "Press r to continue...", [170, 350])
+            self.text.display_fonts(self.screen, "Your Score is " + str(self.score), [190, 350])
+            self.text.display_fonts(self.screen, "Press r to continue...", [170, 400])
 
             # Key binding-----------------------------#
             for event in pygame.event.get():
@@ -292,6 +296,9 @@ class Game:
             self.game_surface.fill((0, 0, 0))
             self.next_surface.fill((0, 0, 0))
             self.score_surface.fill((0, 0, 0))
+
+            self.title_text.display_fonts(self.score_surface, "Score", [25, 10])
+            self.score_text.display_fonts(self.score_surface, str(self.score), [(self.score_surface.get_width() - len(str(self.score) * 15)) // 2, 100])
 
             # Drawing the lines on the game screen--------------------------#
             for i in range(10):
@@ -326,6 +333,10 @@ class Game:
                     if event.key == K_w or event.key == K_UP:
                         self.rotate_block()
                         self.press_sound.play()
+
+                if event.type == MOUSEBUTTONDOWN:
+                    self.rotate_block()
+                    self.press_sound.play()
 
             # Surfaces blit to the main screen-------------------------#
             self.screen.blit(self.game_surface, [self.padding, self.padding])
